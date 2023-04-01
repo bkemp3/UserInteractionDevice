@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class BleTest : MonoBehaviour
 {
@@ -30,6 +31,7 @@ public class BleTest : MonoBehaviour
 
     // GUI elements
     public Text TextDiscoveredDevices, TextIsScanning, TextTargetDeviceConnection, TextTargetDeviceData;
+    // TODO: change back to pressablebutton (HL2)
     public Button ButtonEstablishConnection, ButtonStartScan;
     string remoteAngle, lastRemoteAngle;
     // byte remoteAngle, lastRemoteAngle;
@@ -46,7 +48,7 @@ public class BleTest : MonoBehaviour
         readingThread = new Thread(ReadBleData);
 
         // Initialize GameObjects that need to be searched
-        //body = GameObject.FindWithTag("body");
+        body = GameObject.FindWithTag("body");
         // writingThread = new Thread(WriteBLEData);
         // writingThread = new ParameterizedThreadStart(WriteBLEData);
         // writingThread = new Thread (() => WriteBLEData(toSend));
@@ -198,8 +200,10 @@ public class BleTest : MonoBehaviour
         // value on the first field of our package.
         remoteAngle = System.Text.Encoding.ASCII.GetString(packageReceived).TrimEnd('\0');
         Debug.Log("Angle: " + remoteAngle);
+        // Debug.Log(i);
+        // i++;
         q = remoteAngle.Split(",");
-        Thread.Sleep(100);
+        Thread.Sleep(25);
     }
 
 
@@ -234,6 +238,8 @@ public class BleTest : MonoBehaviour
             case "readData":
                 if (!readingThread.IsAlive)
                 {
+                    // InvokeRepeating("readingThread", 0.1f, 0.001f);
+
                     readingThread = new Thread(ReadBleData);
                     readingThread.Start();
                 }
@@ -355,16 +361,11 @@ public class BleTest : MonoBehaviour
         // Unity accepts x,y,z,w
         Quaternion rot = new Quaternion(qx, qy, qz, qw);
         // Quaternion spin=Quaternion.Euler(-y, x,-z);
-        Quaternion spin = Quaternion.Euler(new Vector3(0, 180, 0));
-        i++;
-        if (i > 360)
-        {
-            i = 0;
-        }
-
-        Vector3 rotationToAdd = new Vector3(0, 90, 0);
+        Quaternion spin1 = Quaternion.Euler(new Vector3(-90, 0, 0));
+        Quaternion spin2 = Quaternion.Euler(new Vector3(0, 0, -90));
+        Quaternion spin3 = Quaternion.Euler(new Vector3(180, 0, 0));
         //body.transform.position;
-        body.transform.rotation = rot;
+        body.transform.rotation = spin1 * spin2 * spin3 * rot;
     }
 }
 
